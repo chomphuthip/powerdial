@@ -142,7 +142,7 @@ void tone_powershell(Tremont_Nexus* nexus) {
 }
 
 int main() {
-	printf("BleedDial v0.0\n");
+	printf("PowerDial v0.0\n");
 	
 	init_winsock();
 
