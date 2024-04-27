@@ -8,6 +8,13 @@
 
 #pragma comment(lib, "Ws2_32.lib")
 
+//Make sure that the information is between quotes.
+#define LOCAL_PORT "7777"
+
+#define ENCRYPTION_KEY "lets learn about IELR(1) parser generators"
+#define CTRL_STREAM_PASSWD "badapple1998"
+#define PWSH_STREAM_PASSWD "cardstock's mom"
+
 void init_winsock() {
 	printf("Initiallizing Winsock...\n");
 	WSADATA wsa_data;
@@ -28,7 +35,7 @@ void setup_socket(SOCKET* sock) {
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_protocol = IPPROTO_UDP;
-    int addr_info_res = getaddrinfo("127.0.0.1", "9999", &hints, &res);
+    int addr_info_res = getaddrinfo("127.0.0.1", LOCAL_PORT, &hints, &res);
     if (addr_info_res != 0) {
         perror("Invaid address!\n");
         exit(-1);
@@ -58,7 +65,7 @@ void setup_tremont(SOCKET* sock, Tremont_Nexus** nexus) {
         exit(-1);
     }
 
-    char key[] = "lets learn about IELR(1) parser generators";
+    char key[] = ENCRYPTION_KEY;
     res = tremont_key_nexus(key, sizeof(key), *nexus);
     if (res != 0) {
         perror("Unable to key Tremont nexus!");
@@ -82,7 +89,7 @@ void tone_powershell(Tremont_Nexus* nexus) {
         exit(-1);
     }
 
-    char password[] = "cardstock's mom";
+    char password[] = PWSH_STREAM_PASSWD;
     tremont_auth_stream(7777, password, sizeof(password), nexus);
 
     while (tremont_poll_stream(7777, nexus) == -1) {
@@ -147,7 +154,7 @@ int main() {
 
     tremont_set_size(300, nexus);
 
-    char password[] = "badapple1998";
+    char password[] = CTRL_STREAM_PASSWD;
     tremont_auth_stream(9999, password, sizeof(password), nexus);
 
     tremont_accept_stream(9999, 0, nexus);
